@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  labels:
+    tier: frontend
+    app: web-apache
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+       tier: frontend
+       app: web-apache
+  template:
+    metadata:
+       name: web-pod
+       labels:
+         app: web-apache
+         tier: frontend
+    spec:
+      containers:
+      - image: httpd:v1
+        name: web-container
+        ports:
+        - containerPort: 80
+          name: web-port
+        volumeMounts:
+         -  mountPath: /var/www/html
+            name: web-storage
+      volumes:
+      - name: web-storage
+        persistentVolumeClaim:
+          claimName: web-pvc
